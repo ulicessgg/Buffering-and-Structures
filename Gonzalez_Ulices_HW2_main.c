@@ -50,5 +50,8 @@ int main(int argc, char* argv[])
 
     free(pi);
 
+    char* buffer = malloc(BLOCK_SIZE);
+    int count = 0;
+
     return 0;
 }
