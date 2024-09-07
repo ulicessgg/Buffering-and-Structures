@@ -77,16 +77,20 @@ int main(int argc, char* argv[])
 
         if(spaceUsed + spaceNeeded >= BLOCK_SIZE)
         {
-            memcpy(buffer + spaceUsed, i, BLOCK_SIZE - spaceUsed);
+            memcpy(buffer + spaceUsed, i, (BLOCK_SIZE - spaceUsed));
             commitBlock(buffer);
 
-            printf("\nbuffer being filled and reaches the commit portion\n");
-            return 0;
+            i += (BLOCK_SIZE - spaceUsed);
+            spaceNeeded -= (BLOCK_SIZE - spaceUsed);
+            spaceUsed = 0;
         }
 
         memcpy(buffer + spaceUsed, i, spaceUsed);
         spaceUsed += spaceNeeded;
+        i = getNext();
     }
 
-    return 0;
+    free(buffer);
+
+    return checkIt();
 }
