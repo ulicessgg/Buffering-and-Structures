@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    // sets the values of the pi values using the first two command line arguements
+    // sets the values of the pi using the first two command line arguements
     // and with hardcoded values
     pi->firstName = argv[1];
     pi->lastName = argv[2];
@@ -48,10 +48,42 @@ int main(int argc, char* argv[])
         return 0;
     }
 
+    // deallocates the memory being taken up by the pi instance
     free(pi);
 
+    // char pointer is allocated to the size of 256 and spaceUsed is set to 0  
+    // since the buffer is empty
     char* buffer = malloc(BLOCK_SIZE);
-    int count = 0;
+    int spaceUsed= 0;
+
+    // testing writePersonalInfo with pi to make sure it runs sucessfully
+    if(buffer == NULL)
+    {
+        printf("\nmalloc failed to allocate the buffer\n");
+        return 0;
+    }
+
+    // initializes the value of i with the first getNext value
+    const char* i = getNext();
+    
+    // while loop will iterates using the getNext value assigned to iterator i
+    // once the getNext function returns a NULL sucessfully this will signal  
+    // the end of the strings
+    // if getNext returns a null to i prior to the while it will not allow for
+    // the loop to execute avoiding any unnecassru processes from occuring
+    while(i != NULL)
+    {
+        int spaceNeeded = strlen(i);
+
+        if(spaceUsed + spaceNeeded >= BLOCK_SIZE)
+        {
+            printf("\nbuffer being filled and reaches the commit portion\n");
+            return 0;
+        }
+
+        memcpy(buffer, i, spaceUsed);
+        spaceUsed += spaceNeeded;
+    }
 
     return 0;
 }
