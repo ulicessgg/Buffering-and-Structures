@@ -8,16 +8,13 @@
 * File:: Gonzalez_Ulices_HW2_main.c
 *
 * Description:: This file creates an instance of the personal
-* information struct provided in the assignment2.h file and
-* allocates the memory for the instance using malloc and then
-* proceeds to assign values to each variable in the struct
-* after this is completed the following portion of the program
-* allocates memory for a character buffer that is then filled
-* with string values and then committed once full and repreated
-* until no values are left to be comitted, this will then lead
-* to the program returning a value to check the success of the
-* processes that have been completed and will display a hexdump
-* generated over the course of the program being executed
+* information struct and allocates the memory using malloc and
+* proceeds to populate its values, following this the program
+* creates andn allocates memory for a character buffer which
+* will be populated with strings and committed once full until
+* no values are left to be comitted, this will then lead to the
+* calling a check function and returning its value upon exit
+* which will display a hexdump for analysis upon termination
 *
 **************************************************************/
 #include <stdio.h>
@@ -27,18 +24,12 @@
 
 int main(int argc, char* argv[])
 {
-    // malloc allocates the memory for pi by returning a pointer of the
-    // size of the personalInfo struct or null if it is unable to allocate
+    // instance of personalInfo struct allocated using malloc
     personalInfo* pi = malloc(sizeof(struct personalInfo));
 
-    //testing pi to make sure it isnt null
-    if(pi == NULL)
-    {
-        printf("\nmalloc failed to allocate pi\n");
-    }
-
-    // sets the values of the pi using the first two command line arguements
-    // and with hardcoded values
+    // populates the values of pi using command line arguements
+    // for the name and message, and uses predetermind values
+    // for studentID, level, and languages
     pi->firstName = argv[1];
     pi->lastName = argv[2];
     pi->studentID = 923328897;
@@ -50,44 +41,31 @@ int main(int argc, char* argv[])
                     KNOWLEDGE_OF_R | KNOWLEDGE_OF_BASIC;
     strncpy(pi->message, argv[3], sizeof(pi->message));
 
-    // testing writePersonalInfo with pi to make sure it runs sucessfully
-    if(writePersonalInfo(pi) != 0)
-    {
-        printf("\nwrite personal failed to write pi and did not return 0\n");
-    }
+    // write the info prior to pi being deallocated
+    writePersonalInfo(pi);
 
-    // deallocates the memory being taken up by the pi instance
     free(pi);
 
-    // char pointer is allocated to the size of 256 and spaceUsed is set to 0  
-    // since the buffer is empty
+    // buffer is allocated using malloc and specified size and spaceUsed
+    // is set to 0 due to the buffer being empty
     char* buffer = malloc(BLOCK_SIZE);
     int spaceUsed = 0;
 
-    // testing writePersonalInfo with pi to make sure it runs sucessfully
-    if(buffer == NULL)
-    {
-        printf("\nmalloc failed to allocate the buffer\n");
-    }
-
-    // initializes the value of i with the first getNext value
+    // initializes the value of iterator i with the first getNext value
     const char* i = getNext();
-    
-    // the while loop will iterates using the getNext value assigned to iterator
-    // i once the getNext function returns a NULL sucessfully this will signal  
-    // the end of the strings
+
+    // while will loop until the return value of getNext() is null and
+    // will also prevent the loop from running if getNext() returns a
+    // null immediately
     while(i != NULL)
     {
-        // the returned strlen value will be saved and used for copying strings
-        // into the buffer and also checking if the buffer is in need of being
-        // committed
+        // length of the current value of i to be used for condition checks
+        // and to properly copy strings into the buffer
         int spaceNeeded = strlen(i);
 
         // if the buffer is about to be or is full it will then copy to its
-        // available space and then be committed using commitBuffer which
-        // will then be followed by resetting the spacedNeeded and spaceUsed
-        // variables as well as moving the iterator along to the postion after
-        // the now truncated string
+        // available space and then be committed using commitBuffer and reset
+        // i, spaceNeeded, and spaceUsed for future use
         if(spaceUsed + spaceNeeded >= BLOCK_SIZE)
         {
             memcpy(buffer + spaceUsed, i, (BLOCK_SIZE - spaceUsed));
@@ -100,18 +78,18 @@ int main(int argc, char* argv[])
 
         // the current iterator value will be stored into the buffer using
         // spaceUsed to set the position and spaceNeeded to define the end
-        // of the string being copied which will be followed by updating
-        // spaceUsed and getting the next string from getNext before looping
         memcpy(buffer + spaceUsed, i, spaceNeeded);
         spaceUsed += spaceNeeded;
+
+        // iterator i will be assigned the next value returned by getNext()
+        // and if NULL will be caught ending the loop
         i = getNext();
     }
 
-    // in the case that there is still left over strings in the buffer they will
-    // be commited prior to the buffer being deallocated
+    // if any values are leftover in the buffer they will be commited prior
+    // to deallocating the buffer
     if(spaceUsed > 0)
     {
-        printf("Theres still items in the buffer");
         commitBlock(buffer);
     }
 
