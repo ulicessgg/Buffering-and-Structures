@@ -7,14 +7,7 @@
 *
 * File:: Gonzalez_Ulices_HW2_main.c
 *
-* Description:: This file creates an instance of the personal
-* information struct and allocates the memory using malloc and
-* proceeds to populate its values, following this the program
-* creates andn allocates memory for a character buffer which
-* will be populated with strings and committed once full until
-* no values are left to be comitted, this will then lead to the
-* calling a check function and returning its value upon exit
-* which will display a hexdump for analysis upon termination
+* Description:: 
 *
 **************************************************************/
 #include <stdio.h>
@@ -24,12 +17,13 @@
 
 int main(int argc, char* argv[])
 {
-    // instance of personalInfo struct allocated using malloc
+    // instance of personalInfo struct is created and allocated
     personalInfo* pi = malloc(sizeof(struct personalInfo));
 
-    // populates the values of pi using command line arguements
-    // for the name and message, and uses predetermind values
-    // for studentID, level, and languages
+    // pi values are populated using command line arguements
+    // for the first name, last name and message
+    // studentID, level, and languages are initialized with
+    // predetermined values
     pi->firstName = argv[1];
     pi->lastName = argv[2];
     pi->studentID = 923328897;
@@ -41,59 +35,64 @@ int main(int argc, char* argv[])
                     KNOWLEDGE_OF_R | KNOWLEDGE_OF_BASIC;
     strncpy(pi->message, argv[3], sizeof(pi->message));
 
-    // write the info prior to pi being deallocated
+    // writePersonalInfo is called to write the pi instance
     writePersonalInfo(pi);
 
+    // pi instance is deallocated
     free(pi);
 
-    // buffer is allocated using malloc and specified size and spaceUsed
-    // is set to 0 due to the buffer being empty
+    // c string buffer is created and allocated using BLOCK_SIZE
+    // spaceUsed counter is created and set to 0 since buffer is
+    // empty
     char* buffer = malloc(BLOCK_SIZE);
     int spaceUsed = 0;
 
-    // initializes the value of iterator i with the first getNext value
+    // initializes the value of c string i with the first getNext value
     const char* i = getNext();
 
-    // while will loop until the return value of getNext() is null and
-    // will also prevent the loop from running if getNext() returns a
-    // null immediately
+    // while the value of i is not NULL the contents of i are copied to
+    // the buffer, if the first getNext value is NULL the while will not
+    // be executed and will be skipped
     while(i != NULL)
     {
-        // length of the current value of i to be used for condition checks
-        // and to properly copy strings into the buffer
+        // spaceNeeded is set to the length of current string stored in i
         int spaceNeeded = strlen(i);
 
-        // if the buffer is about to be or is full it will then copy to its
-        // available space and then be committed using commitBuffer and reset
-        // i, spaceNeeded, and spaceUsed for future use
+        // if buffer is about to be full it will then copy to as much of the
+        // current string to its availabe space leading to commitBlock being
+        // called to commit the buffer to the BLOCK_SIZE buffer
         if(spaceUsed + spaceNeeded >= BLOCK_SIZE)
         {
+            // contents of i are copied to the buffer
             memcpy(buffer + spaceUsed, i, (BLOCK_SIZE - spaceUsed));
+            // buffer is commited after its pointer is passed to commitBlock 
             commitBlock(buffer);
 
+            // i, spaceNeeded, and spaceUsed are reset for future use
             i += (BLOCK_SIZE - spaceUsed);
             spaceNeeded -= (BLOCK_SIZE - spaceUsed);
             spaceUsed = 0;
         }
 
-        // the current iterator value will be stored into the buffer using
-        // spaceUsed to set the position and spaceNeeded to define the end
+        // contents of i are copied to the buffer
         memcpy(buffer + spaceUsed, i, spaceNeeded);
+        // spaceUsed is updated after new string is copied
         spaceUsed += spaceNeeded;
 
-        // iterator i will be assigned the next value returned by getNext()
-        // and if NULL will be caught ending the loop
+        // i is set to the next string returned by getNext()
         i = getNext();
     }
 
-    // if any values are leftover in the buffer they will be commited prior
-    // to deallocating the buffer
+    // spaceUsed is checked and if greater than 0 any strings left in
+    // buffer will be commited
     if(spaceUsed > 0)
     {
         commitBlock(buffer);
     }
 
+    // buffer is deallocated
     free(buffer);
 
+    // checkIt is called and it's return value is returned upon exit
     return checkIt();
 }
