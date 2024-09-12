@@ -35,44 +35,38 @@ int main(int argc, char* argv[])
     // writePersonalInfo is called to write the pi instance
     writePersonalInfo(pi);
 
-    // pi instance is deallocated
     free(pi);
 
-    // c string buffer is created and allocated using BLOCK_SIZE
+    // buffer is created and allocated using BLOCK_SIZE
     char* buffer = malloc(BLOCK_SIZE);
-    // spaceUsed is created and set to 0 since buffer is empty
     int spaceUsed = 0;
 
-    // initializes the value of c string temp with the first getNext value
+    // initialize the value of character pointer temp with getNext
     const char* temp = getNext();
 
-    // while the value of temp is not NULL the contents of temp are copied to
-    // the buffer, if the first getNext value is NULL the while will not
-    // be executed and will be skipped
+    // while temp is not NULL the temp is copied to the buffer
     while(temp != NULL)
     {
-        // spaceNeeded is set to the length of current string stored in temp
+        // spaceNeeded is set to the length of temp
         int spaceNeeded = strlen(temp);
 
-        // if buffer is about to be full it will then copy to as much of the
-        // current string to its availabe space leading to commitBlock being
-        // called to commit the buffer to the BLOCK_SIZE buffer
+        // if buffer is near capacity  
         if(spaceUsed + spaceNeeded >= BLOCK_SIZE)
         {
-            // contents of temp are copied to the buffer
+            // as much of temp is copied and the buffer is commited
             memcpy(buffer + spaceUsed, temp, (BLOCK_SIZE - spaceUsed));
-            // buffer is commited after its pointer is passed to commitBlock 
             commitBlock(buffer);
 
-            // temp, spaceNeeded, and spaceUsed are reset for future use
+            // temp is moved ahead after the copied contents
             temp += (BLOCK_SIZE - spaceUsed);
+
+            // spaceNeeded and spaceNeed are updated
             spaceNeeded -= (BLOCK_SIZE - spaceUsed);
             spaceUsed = 0;
         }
 
-        // contents of temp are copied to the buffer
+        // contents of temp are copied and spaceUsed is updated
         memcpy(buffer + spaceUsed, temp, spaceNeeded);
-        // spaceUsed is updated after new string is copied
         spaceUsed += spaceNeeded;
 
         // temp is set to the next string returned by getNext()
