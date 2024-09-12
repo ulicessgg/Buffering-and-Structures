@@ -7,7 +7,12 @@
 *
 * File:: Gonzalez_Ulices_HW2_main.c
 *
-* Description:: 
+* Description:: This file creates and allocates an instance of
+* the personalInfo structure, populates, writes, and then will 
+* deallocate the instance. The file will then create a buffer
+* and copy c-strings to it and commit them when the buffer is 
+* full. When no more c-strings are available the buffer is
+* deallocated and a the program returns a hexdump on exit.
 *
 **************************************************************/
 #include <stdio.h>
